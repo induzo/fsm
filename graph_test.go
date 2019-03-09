@@ -19,7 +19,7 @@ func TestGraph_AddNode(t *testing.T) {
 			name: "linking the node accepted to node new",
 			node: &Node{
 				Sources: []StatusAction{
-					StatusAction{
+					{
 						Status: "new",
 						Action: "accept",
 					},
@@ -32,14 +32,14 @@ func TestGraph_AddNode(t *testing.T) {
 			name: "linking the node accepted to node new",
 			node: &Node{
 				Sources: []StatusAction{
-					StatusAction{
+					{
 						Status: "new",
 						Action: "bury",
 					},
 				},
 				Status: "buried",
 				Outcomes: []StatusAction{
-					StatusAction{
+					{
 						Status: "accepted",
 						Action: "accept",
 					},
@@ -51,7 +51,7 @@ func TestGraph_AddNode(t *testing.T) {
 			name: "linking the node canceled to node x, which doesn't exist",
 			node: &Node{
 				Sources: []StatusAction{
-					StatusAction{
+					{
 						Status: "x",
 						Action: "cancel",
 					},
@@ -64,14 +64,14 @@ func TestGraph_AddNode(t *testing.T) {
 			name: "linking the node x to node new",
 			node: &Node{
 				Sources: []StatusAction{
-					StatusAction{
+					{
 						Status: "new",
 						Action: "lose",
 					},
 				},
 				Status: "lost",
 				Outcomes: []StatusAction{
-					StatusAction{
+					{
 						Status: "x",
 						Action: "accept",
 					},
@@ -256,7 +256,7 @@ func getTestGraph() Graph {
 	_ = m.AddNode(
 		&Node{
 			Sources: []StatusAction{
-				StatusAction{
+				{
 					Status: "new",
 					Action: "accept",
 				},
@@ -267,11 +267,11 @@ func getTestGraph() Graph {
 	_ = m.AddNode(
 		&Node{
 			Sources: []StatusAction{
-				StatusAction{
+				{
 					Status: "new",
 					Action: "cancel",
 				},
-				StatusAction{
+				{
 					Status: "accepted",
 					Action: "cancel",
 				},
