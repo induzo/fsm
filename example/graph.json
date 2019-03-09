@@ -1,0 +1,145 @@
+[
+  {
+    "status": "winning_offer_for_approval"
+  },
+  {
+    "sources": [
+      {
+        "status": "winning_offer_for_approval",
+        "action": "reject_offer",
+        "roles": ["customer"]
+      }
+    ],
+    "status": "offer_rejected"
+  },
+  {
+    "sources": [
+      {
+        "status": "winning_offer_for_approval",
+        "action": "accept_offer",
+        "roles": ["customer"]
+      }
+    ],
+    "status": "offer_accepted"
+  },
+  {
+    "sources": [
+      {
+        "status": "offer_accepted",
+        "action": "prepayment_confirmed",
+        "roles": ["admin"]
+      }
+    ],
+    "status": "prepayment_confirmed"
+  },
+  {
+    "sources": [
+      {
+        "status": "prepayment_confirmed",
+        "action": "start_financing",
+        "roles": ["admin", "financier"]
+      }
+    ],
+    "status": "financing_in_progress"
+  },
+  {
+    "sources": [
+      {
+        "status": "financing_in_progress",
+        "action": "confirm_financing",
+        "roles": ["admin"]
+      }
+    ],
+    "status": "financing_confirmed"
+  },
+  {
+    "sources": [
+      {
+        "status": "financing_in_progress",
+        "action": "set_financing_issue",
+        "roles": ["admin"]
+      }
+    ],
+    "status": "financing_issue"
+  },
+  {
+    "sources": [
+      {
+        "status": "financing_confirmed",
+        "action": "set_financed_goods_delivered",
+        "roles": ["admin", "customer"]
+      }
+    ],
+    "status": "financed_goods_delivered"
+  },
+  {
+    "sources": [
+      {
+        "status": "financed_goods_delivered",
+        "action": "start_repayment",
+        "roles": ["admin"]
+      }
+    ],
+    "status": "repayment_in_progress"
+  },
+  {
+    "sources": [
+      {
+        "status": "repayment_in_progress",
+        "action": "set_repayement_issue",
+        "roles": ["admin"]
+      }
+    ],
+    "status": "repayment_issue"
+  },
+  {
+    "sources": [
+      {
+        "status": "repayment_in_progress",
+        "action": "confirm_repayement",
+        "roles": ["admin", "financier"]
+      }
+    ],
+    "status": "repayment_confirmed"
+  },
+  {
+    "sources": [
+      {
+        "status": "repayment_confirmed",
+        "action": "start_fees_payment",
+        "roles": ["admin"]
+      }
+    ],
+    "status": "fees_payment_in_progress"
+  },
+  {
+    "sources": [
+      {
+        "status": "fees_payment_in_progress",
+        "action": "set_fees_payment_issue",
+        "roles": ["admin"]
+      }
+    ],
+    "status": "fees_payment_issue"
+  },
+  {
+    "sources": [
+      {
+        "status": "fees_payment_in_progress",
+        "action": "confirm_fees_payment",
+        "roles": ["admin"]
+      }
+    ],
+    "status": "fees_payment_confirmed"
+  },
+  {
+    "sources": [
+      {
+        "status": "winning_offer_for_approval",
+        "action": "delete",
+        "roles": ["admin"]
+      }
+    ],
+    "status": "inactive"
+  }
+]
