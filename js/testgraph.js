@@ -7,7 +7,7 @@ export default [
       {
         status: "new",
         action: "start_auction",
-        roles: ["customer", "admin"]
+        roles: ["trading_house", "admin"]
       }
     ],
     status: "auction_in_progress"
@@ -16,18 +16,25 @@ export default [
     sources: [
       {
         status: "auction_in_progress",
-        action: "close_auction",
-        roles: ["customer", "admin"]
+        action: "inactive",
+        roles: ["trading_house", "admin"]
       }
     ],
-    status: "winning_offer_for_approval"
+    status: "winning_offer_for_approval",
+    outcomes: [
+      {
+        action: "close_auction",
+        status: "inactive",
+        roles: ["trading_house", "admin"]
+      }
+    ]
   },
   {
     sources: [
       {
         status: "winning_offer_for_approval",
         action: "reject_offer",
-        roles: ["customer", "admin"]
+        roles: ["trading_house", "admin"]
       }
     ],
     status: "offer_rejected"
@@ -37,7 +44,7 @@ export default [
       {
         status: "winning_offer_for_approval",
         action: "accept_offer",
-        roles: ["customer", "admin"]
+        roles: ["trading_house", "admin"]
       }
     ],
     status: "offer_accepted"
@@ -52,12 +59,12 @@ export default [
       {
         status: "auction_in_progress",
         action: "cancel",
-        roles: ["customer", "admin"]
+        roles: ["trading_house", "admin"]
       },
       {
         status: "winning_offer_for_approval",
         action: "cancel",
-        roles: ["customer", "admin"]
+        roles: ["trading_house", "admin"]
       }
     ],
     status: "inactive"

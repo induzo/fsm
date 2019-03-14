@@ -16,5 +16,19 @@ export const getOutcomeActions = (graph, status, role) => {
       return acc;
     }, []);
 
-  return fromSrc;
+  const toOutcome = graph
+    .filter(s => s.status === status && s.outcomes && s.outcomes.length > 0)
+    .map(s => s.outcomes)
+    .reduce((acc, curr) => {
+      acc = acc.concat(curr);
+      return acc;
+    }, [])
+    .filter(srx => srx.roles.includes(role) > 0)
+    .map(o => o.action)
+    .reduce((acc, curr) => {
+      acc.push(curr);
+      return acc;
+    }, []);
+
+  return toOutcome.concat(fromSrc);
 };
