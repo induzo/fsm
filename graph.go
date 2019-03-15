@@ -32,6 +32,13 @@ type Node struct {
 	Outcomes []StatusAction `json:"outcomes,omitempty"`
 }
 
+func (n *Node) String() string {
+	return fmt.Sprintf(
+		`{status: "%s", sources: %v, outcomes: %v}`,
+		n.Status, n.Sources, n.Outcomes,
+	)
+}
+
 // Graph represent the container of all nodes
 type Graph map[Status]*Node
 
@@ -39,6 +46,14 @@ type Graph map[Status]*Node
 func NewGraph() Graph {
 	return Graph(make(map[Status]*Node))
 }
+
+// func (g Graph) String() string {
+// 	var str []string
+// 	for s, n := range g {
+// 		str = append(str, fmt.Sprintf("%s: %v", s, n))
+// 	}
+// 	return strings.Join(str, "\n")
+// }
 
 // AddNode will add a node to the state graph
 func (g Graph) AddNode(n *Node) error {
@@ -124,8 +139,8 @@ func (g Graph) appendSourceToOutcomeNodes(
 			}
 		}
 		if !srcExists {
-			g[o.Status].Outcomes = append(
-				g[o.Status].Outcomes,
+			g[o.Status].Sources = append(
+				g[o.Status].Sources,
 				StatusAction{
 					Action: o.Action,
 					Status: st,

@@ -1,6 +1,7 @@
 package fsm
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -11,37 +12,107 @@ func TestGraph_AddNode(t *testing.T) {
 		return
 	}
 	tests := []struct {
-		name    string
-		node    *Node
-		wantErr bool
+		name          string
+		nodes         []*Node
+		expectedGraph Graph
+		wantErr       bool
 	}{
 		{
 			name: "linking the node accepted to node new",
-			node: &Node{
-				Sources: []StatusAction{
-					{
-						Status: "new",
-						Action: "accept",
+			nodes: []*Node{
+				&Node{
+					Sources: []StatusAction{
+						{
+							Status: "new",
+							Action: "accept",
+						},
+					},
+					Status: "accepted",
+				},
+			},
+			expectedGraph: Graph{
+				"new": &Node{
+					Status: "new",
+					Outcomes: []StatusAction{
+						{
+							Action: "accept",
+							Status: "accepted",
+						},
 					},
 				},
-				Status: "accepted",
+				"accepted": &Node{
+					Sources: []StatusAction{
+						{
+							Status: "new",
+							Action: "accept",
+						},
+					},
+					Status: "accepted",
+				},
 			},
 			wantErr: false,
 		},
 		{
-			name: "linking the node accepted to node new",
-			node: &Node{
-				Sources: []StatusAction{
-					{
-						Status: "new",
-						Action: "bury",
+			name: "linking the node accepted to node new with specified outcomes",
+			nodes: []*Node{
+				&Node{
+					Sources: []StatusAction{
+						{
+							Status: "accepted",
+							Action: "bury",
+						},
+					},
+					Status: "buried",
+					Outcomes: []StatusAction{
+						{
+							Action: "cancel_bury",
+							Status: "accepted",
+						},
 					},
 				},
-				Status: "buried",
-				Outcomes: []StatusAction{
-					{
-						Status: "accepted",
-						Action: "accept",
+			},
+			expectedGraph: Graph{
+				"new": &Node{
+					Status: "new",
+					Outcomes: []StatusAction{
+						{
+							Action: "accept",
+							Status: "accepted",
+						},
+					},
+				},
+				"accepted": &Node{
+					Sources: []StatusAction{
+						{
+							Status: "new",
+							Action: "accept",
+						},
+						{
+							Status: "buried",
+							Action: "cancel_bury",
+						},
+					},
+					Status: "accepted",
+					Outcomes: []StatusAction{
+						{
+							Status: "buried",
+							Action: "bury",
+						},
+					},
+				},
+				"buried": &Node{
+					Sources: []StatusAction{
+						{
+							Status: "accepted",
+							Action: "bury",
+						},
+					},
+					Status: "buried",
+					Outcomes: []StatusAction{
+						{
+							Action: "cancel_bury",
+							Status: "accepted",
+						},
 					},
 				},
 			},
@@ -49,31 +120,35 @@ func TestGraph_AddNode(t *testing.T) {
 		},
 		{
 			name: "linking the node canceled to node x, which doesn't exist",
-			node: &Node{
-				Sources: []StatusAction{
-					{
-						Status: "x",
-						Action: "cancel",
+			nodes: []*Node{
+				&Node{
+					Sources: []StatusAction{
+						{
+							Status: "x",
+							Action: "cancel",
+						},
 					},
+					Status: "canceled",
 				},
-				Status: "canceled",
 			},
 			wantErr: true,
 		},
 		{
 			name: "linking the node x to node new",
-			node: &Node{
-				Sources: []StatusAction{
-					{
-						Status: "new",
-						Action: "lose",
+			nodes: []*Node{
+				&Node{
+					Sources: []StatusAction{
+						{
+							Status: "new",
+							Action: "lose",
+						},
 					},
-				},
-				Status: "lost",
-				Outcomes: []StatusAction{
-					{
-						Status: "x",
-						Action: "accept",
+					Status: "lost",
+					Outcomes: []StatusAction{
+						{
+							Status: "x",
+							Action: "accept",
+						},
 					},
 				},
 			},
@@ -81,20 +156,36 @@ func TestGraph_AddNode(t *testing.T) {
 		},
 		{
 			name: "adding an existing node, which doesn't work",
-			node: &Node{
-				Status: "new",
+			nodes: []*Node{
+				&Node{
+					Status: "new",
+				},
 			},
 			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := m.AddNode(tt.node)
+			var err error
+			for _, n := range tt.nodes {
+				errAN := m.AddNode(n)
+				if errAN != nil {
+					err = errAN
+				}
+			}
 			if (err != nil) != tt.wantErr {
 				t.Errorf(
 					"Graph.AddNode() error = %v, wantErr %v",
 					err, tt.wantErr,
 				)
+			}
+			if !tt.wantErr {
+				if !reflect.DeepEqual(m, tt.expectedGraph) {
+					t.Errorf(
+						"Graph.AddNode() expected = %s, got %s",
+						tt.expectedGraph, m,
+					)
+				}
 			}
 		})
 	}
@@ -115,7 +206,7 @@ func TestGraph_UnmarshalJSON(t *testing.T) {
 				data: []byte(`
 				[
 					{
-						"status": "New"
+						"status": "new"
 					}
 				]`,
 				),
@@ -132,7 +223,7 @@ func TestGraph_UnmarshalJSON(t *testing.T) {
 			args: args{
 				data: []byte(`
 				[
-						"status_id": "New"
+						"status_id": "new"
 					}
 				]`,
 				),
@@ -162,10 +253,18 @@ func TestGraph_GetOutcomeStatus(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "existing status and action",
+			name: "existing status and action in sources",
 			args: args{
 				status: "new",
 				action: "accept",
+			},
+			want: "accepted",
+		},
+		{
+			name: "existing status and action in outcomes",
+			args: args{
+				status: "canceled",
+				action: "cancel cancellation",
 			},
 			want: "accepted",
 		},
@@ -226,24 +325,26 @@ func getTestGraphJSON() []byte {
 			"status": "new"
 		},
 		{
-			"status": "accepted",
 			"sources": [
 				{
 					"status": "new",
 					"action": "accept"
 				}
-			]
+			],
+			"status": "accepted"
 		},
 		{
-			"status": "canceled",
 			"sources": [
 				{
 					"status": "new",
 					"action": "cancel"
-				},
+				}
+			],
+			"status": "canceled",
+			"outcomes": [
 				{
-					"status": "accepted",
-					"action": "cancel"
+					"action": "cancel cancellation",
+					"status": "accepted"
 				}
 			]
 		}
@@ -271,12 +372,14 @@ func getTestGraph() Graph {
 					Status: "new",
 					Action: "cancel",
 				},
-				{
-					Status: "accepted",
-					Action: "cancel",
-				},
 			},
 			Status: "canceled",
+			Outcomes: []StatusAction{
+				{
+					Action: "cancel cancellation",
+					Status: "accepted",
+				},
+			},
 		},
 	)
 
