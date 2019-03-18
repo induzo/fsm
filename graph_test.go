@@ -20,7 +20,7 @@ func TestGraph_AddNode(t *testing.T) {
 		{
 			name: "linking the node accepted to node new",
 			nodes: []*Node{
-				&Node{
+				{
 					Sources: []StatusAction{
 						{
 							Status: "new",
@@ -55,7 +55,7 @@ func TestGraph_AddNode(t *testing.T) {
 		{
 			name: "linking the node accepted to node new with specified outcomes",
 			nodes: []*Node{
-				&Node{
+				{
 					Sources: []StatusAction{
 						{
 							Status: "accepted",
@@ -121,7 +121,7 @@ func TestGraph_AddNode(t *testing.T) {
 		{
 			name: "linking the node canceled to node x, which doesn't exist",
 			nodes: []*Node{
-				&Node{
+				{
 					Sources: []StatusAction{
 						{
 							Status: "x",
@@ -136,7 +136,7 @@ func TestGraph_AddNode(t *testing.T) {
 		{
 			name: "linking the node x to node new",
 			nodes: []*Node{
-				&Node{
+				{
 					Sources: []StatusAction{
 						{
 							Status: "new",
@@ -157,7 +157,7 @@ func TestGraph_AddNode(t *testing.T) {
 		{
 			name: "adding an existing node, which doesn't work",
 			nodes: []*Node{
-				&Node{
+				{
 					Status: "new",
 				},
 			},
